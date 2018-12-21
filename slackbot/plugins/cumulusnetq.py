@@ -18,10 +18,13 @@ def netq_reply(message, netq_args):
 
     process = Popen(netq_command.split(' '), stdout=subprocess.PIPE)
     netq_output = process.communicate()[0]
-    netq_output = re.sub('\\b          \[0m\\b|\[0m|\[9[12]m', '', netq_output)
+    netq_output = re.sub('\\b          \[0m\\b|\[0m|\[9[01234]m', '', netq_output)
     print "output from command: \n" + netq_output
 
-    if len(netq_output) > 4000:
-      message.channel.upload_content('netq_long_output.txt', netq_output)
+    if netq_output == '':
+      message.reply('`' + netq_command + '` *returned no output*')
     else:
-      message.reply('```{}```'.format(netq_output))
+      if len(netq_output) > 4000:
+        message.channel.upload_content('netq_long_output.txt', netq_output)
+      else:
+        message.reply('`' + netq_command + '`\n```{}```'.format(netq_output))
